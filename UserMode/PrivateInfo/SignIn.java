@@ -1,5 +1,4 @@
 package UserMode.PrivateInfo;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -7,17 +6,18 @@ import UserMode.User;
 import UserMode.UI.BookMenu;
 import UserMode.UI.RegisterWindow;
 
+
 public class SignIn
 {
 
     private static JFrame frame;
     private static JPanel mainPanel;
-    
+
     public SignIn()
     {
-    	SwingUtilities.invokeLater(SignIn::createAndShowGUI);
+        SwingUtilities.invokeLater(SignIn::createAndShowGUI);
     }
-    
+
     public static void main(String[] args)
     {
         new SignIn();
@@ -72,7 +72,7 @@ public class SignIn
         JTextField idInput = new JTextField();
 
         JButton switchButton = new JButton(
-            mode.equals("user") ? "관리자 로그인으로 전환" : "유저 로그인으로 전환"
+                mode.equals("user") ? "관리자 로그인으로 전환" : "유저 로그인으로 전환"
         );
 
         JLabel pwLabel = new JLabel("Password:");
@@ -126,7 +126,7 @@ public class SignIn
                 JOptionPane.showMessageDialog(frame, "로그인되었습니다.");
                 frame.dispose();
             }
-            
+
             else
             {
                 JOptionPane.showMessageDialog(frame, "로그인 실패: ID 또는 비밀번호가 잘못되었습니다.");
@@ -155,13 +155,13 @@ public class SignIn
             User user = (User) ois.readObject();
             if (user.getPassword().equals(password) && isAdmin == false)
             {
-            	new BookMenu();
+                new BookMenu(user);
                 return user;
             }
-            
+
             if(user.getPassword().equals(password) && isAdmin == true)
             {
-            	return user;
+                return user;
             }
         }
         catch (IOException | ClassNotFoundException e)
