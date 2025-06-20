@@ -1,6 +1,9 @@
-package UI;
+package UserMode.UI;
 
 import javax.swing.*;
+
+import UserMode.PrivateInfo.SignIn;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,10 +21,21 @@ public class BookMenu extends JFrame{
             setLocationRelativeTo(null);
 
             // 1. 회원관리 메뉴
-            JMenu memberMenu = new JMenu("회원관리");
+            JMenu memberMenu = new JMenu("MyPage");
             JMenuItem editItem = new JMenuItem("회원 정보 수정");
             JMenuItem deleteItem = new JMenuItem("회원 탈퇴");
             JMenuItem logoutItem = new JMenuItem("로그아웃");
+            logoutItem.addActionListener(e -> 
+            {
+            	int choice = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
+            	if(choice == JOptionPane.YES_NO_OPTION)
+            	{
+            		dispose();
+            		SwingUtilities.invokeLater(() -> new SignIn());
+            	}
+            });
+            
+            
 
             memberMenu.add(editItem);
             memberMenu.add(deleteItem);
@@ -79,4 +93,3 @@ public class BookMenu extends JFrame{
         new BookMenu();
     }
 }
-
