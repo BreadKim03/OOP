@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import UserMode.User;
+import UserMode.UI.BookMenu;
+import UserMode.UI.RegisterWindow;
 
 public class SignIn
 {
@@ -121,8 +123,10 @@ public class SignIn
             User loginUser = login(id, pw, mode);
             if (loginUser != null)
             {
-                JOptionPane.showMessageDialog(frame, "로그인 성공!");
+                JOptionPane.showMessageDialog(frame, "로그인되었습니다.");
+                frame.dispose();
             }
+            
             else
             {
                 JOptionPane.showMessageDialog(frame, "로그인 실패: ID 또는 비밀번호가 잘못되었습니다.");
@@ -142,15 +146,22 @@ public class SignIn
     {
         String folder = mode.equals("admin") ? "Admin" : "User";
         File file = new File(folder + "/" + id + ".dat");
+        boolean isAdmin = mode.equals("admin") ? true : false;
 
         if (!file.exists()) return null;
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file)))
         {
             User user = (User) ois.readObject();
-            if (user.getPassword().equals(password))
+            if (user.getPassword().equals(password) && isAdmin == false)
             {
+            	new BookMenu();
                 return user;
+            }
+            
+            if(user.getPassword().equals(password) && isAdmin == true)
+            {
+            	return user;
             }
         }
         catch (IOException | ClassNotFoundException e)
