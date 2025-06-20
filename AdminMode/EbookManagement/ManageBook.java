@@ -5,7 +5,6 @@ import java.util.*;
 
 public class ManageBook
 {
-
     public List<String> getBookTitles(String directoryPath)
     {
         List<String> titles = new ArrayList<>();
