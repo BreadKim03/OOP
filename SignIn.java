@@ -10,10 +10,15 @@ public class SignIn
 
     private static JFrame frame;
     private static JPanel mainPanel;
-
+    
+    public SignIn()
+    {
+    	SwingUtilities.invokeLater(SignIn::createAndShowGUI);
+    }
+    
     public static void main(String[] args)
     {
-        SwingUtilities.invokeLater(SignIn::createAndShowGUI);
+        new SignIn();
     }
 
     //로그인 선택 창
@@ -113,7 +118,7 @@ public class SignIn
             String id = idInput.getText();
             String pw = new String(pwInput.getPassword());
 
-            User loginUser = userLogin(id, pw);
+            User loginUser = login(id, pw, mode);
             if (loginUser != null)
             {
                 JOptionPane.showMessageDialog(frame, "로그인 성공!");
@@ -133,9 +138,10 @@ public class SignIn
     }
 
     //ID와 비밀번호 확인
-    private static User userLogin(String id, String password)
+    private static User login(String id, String password, String mode)
     {
-        File file = new File("User/" + id + ".dat");
+        String folder = mode.equals("admin") ? "Admin" : "User";
+        File file = new File(folder + "/" + id + ".dat");
 
         if (!file.exists()) return null;
 
@@ -151,7 +157,7 @@ public class SignIn
         {
             e.printStackTrace();
         }
-        
+
         return null;
     }
 }
