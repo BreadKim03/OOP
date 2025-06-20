@@ -45,19 +45,19 @@ public class RegisterWindow extends JFrame
             String id = idInput.getText();
             String pw = new String(pwInput.getPassword());
             String pwCheck = new String(pwCheckInput.getPassword());
-
+            
             if(name.isEmpty())
             {
-                JOptionPane.showMessageDialog(this, "이름은 공백일 수 없습니다.", "오류", JOptionPane.WARNING_MESSAGE);
+            	JOptionPane.showMessageDialog(this, "이름은 공백일 수 없습니다.", "오류", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
+            
             if(id.isEmpty() || pw.isEmpty())
             {
-                JOptionPane.showMessageDialog(this, "ID나 비밀번호는 공백일 수 없습니다.", "오류", JOptionPane.WARNING_MESSAGE);
+            	JOptionPane.showMessageDialog(this, "ID나 비밀번호는 공백일 수 없습니다.", "오류", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
+            
             if (!pw.equals(pwCheck))
             {
                 JOptionPane.showMessageDialog(this, "비밀번호가 일치하지 않습니다.", "오류", JOptionPane.ERROR_MESSAGE);
@@ -86,13 +86,13 @@ public class RegisterWindow extends JFrame
 
     private boolean isDuplicateID(String id)
     {
-        File file = new File("UserMode.User/" + id + ".dat");
+        File file = new File("User/" + id + ".dat");
         return file.exists();
     }
 
     private void saveUser(User user)
     {
-        File dir = new File("UserMode.User");
+        File dir = new File("User");
         if (!dir.exists()) dir.mkdir();
 
         File file = new File(dir, user.ID + ".dat");
