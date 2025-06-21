@@ -50,7 +50,13 @@ public class RequestManager extends JFrame {
         JButton acceptButton = new JButton("수락");
         JButton rejectButton = new JButton("거절");
 
-        acceptButton.addActionListener(e -> handleRequest("허락됨"));
+        acceptButton.addActionListener(e -> 
+        {
+        	int row = requestTable.getSelectedRow();
+        	String RTitle = (String) tableModel.getValueAt(row, 2);
+        	handleRequest("허락됨"); 
+        	giveBooks(RTitle);
+        });
         rejectButton.addActionListener(e -> handleRequest("취소됨"));
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -87,8 +93,73 @@ public class RequestManager extends JFrame {
             }
         }
     }
+    
+    private void giveBooks(String title) {
+        File sourceDir = new File("Books");
+        File targetDir = new File("UserBooks");
 
-    public static void main(String[] args) {
+        if (!targetDir.exists()) {
+            targetDir.mkdir();
+        }
+
+        File[] files = sourceDir.listFiles((d, name) -> name.toLowerCase().endsWith(".nov"));
+        boolean bookFound = false;
+
+        if (files != null) {
+            for (File file : files) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(file)))
+                {
+                    String fileTitle = reader.readLine();
+                    reader.readLine();
+                    reader.readLine();
+                    reader.readLine();
+
+                    if (fileTitle != null && fileTitle.equals(title))
+                    {
+                        bookFound = true;
+
+                        StringBuilder content = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null)
+                        {
+                            content.append(line).append(System.lineSeparator());
+                        }
+
+                        File copiedFile = new File(targetDir, file.getName());
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(copiedFile)))
+                        {
+                            writer.write(content.toString());
+                        }
+
+                        break;
+                    }
+                }
+                
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            if (bookFound)
+            {
+                JOptionPane.showMessageDialog(this, "해당 유저에게 도서가 전달됐습니다.", "완료", JOptionPane.INFORMATION_MESSAGE);
+            }
+            
+            else
+            {
+                JOptionPane.showMessageDialog(this, "요청한 제목과 일치하는 도서를 찾을 수 없습니다.", "오류", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Books 폴더가 비어있습니다.", "오류", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    public static void main(String[] args)
+    {
         SwingUtilities.invokeLater(() -> new RequestManager());
     }
 }

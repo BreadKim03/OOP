@@ -1,5 +1,6 @@
 package UserMode.OwnBooks;
 
-public class BookInfo {
+public class BookInfo
+{
 	
 }

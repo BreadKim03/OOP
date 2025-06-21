@@ -10,7 +10,7 @@ public class Register {
     }
 
     public static void SaveFile(User user) {
-        File dir = new File("UserMode.User");
+        File dir = new File("User");
         if(!dir.exists()) {
             dir.mkdir();
         }

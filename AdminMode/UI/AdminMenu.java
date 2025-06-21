@@ -8,11 +8,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.List;
+
+import AdminMode.UserManagement.AdminSuggestview;
 import AdminMode.UserManagement.AdminUserManage;
+import UserMode.User;
+import UserMode.PrivateInfo.SignIn;
 
 public class AdminMenu extends JFrame
 {
-
     private JPanel mainPanel;
 
     public AdminMenu()
@@ -29,14 +32,15 @@ public class AdminMenu extends JFrame
         JMenu myPageMenu = new JMenu("MyPage");
         JMenuItem userManageItem = new JMenuItem("유저 관리");
         JMenuItem requestItem = new JMenuItem("유저 요청");
+        requestItem.addActionListener(e -> new AdminSuggestview());
         JMenuItem logoutItem = new JMenuItem("로그아웃");
         logoutItem.addActionListener(e ->
         {
             int choice = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
             if (choice == JOptionPane.YES_OPTION)
             {
-                dispose();
-                JOptionPane.showMessageDialog(null, "로그아웃되었습니다.");
+            	dispose();
+        		SwingUtilities.invokeLater(() -> new SignIn());
             }
         });
         
@@ -71,14 +75,16 @@ public class AdminMenu extends JFrame
         JMenu loanMenu = new JMenu("대출관리");
         
         JMenuItem request = new JMenuItem("신청확인");
-        request.addActionListener(e -> {
+        request.addActionListener(e ->
+        {
             new RequestManager().setVisible(true);
         });
         loanMenu.add(request);
         
         loanMenu.add(new JMenuItem("반납 확인"));
-        loanMenu.add(new JMenuItem("대출 내역 조회"));
-        loanMenu.add(new JMenuItem("연체자 및 도서 확인"));
+        JMenuItem requestResult = new JMenuItem("대출 내역 조회");
+        loanMenu.add(requestResult);
+        requestResult.addActionListener(e -> showMyRequestedBooks());
 
         JMenu infoMenu = new JMenu("정보");
         infoMenu.add(new JMenuItem("앱 사용법"));
@@ -98,7 +104,39 @@ public class AdminMenu extends JFrame
 
         setJMenuBar(menuBar);
         add(mainPanel);
+        showWelcomePanel();
         setVisible(true);
+    }
+    
+    private void showWelcomePanel()
+    {
+        mainPanel.removeAll();
+
+        JPanel welcomePanel = new JPanel(new BorderLayout(10, 10));
+        welcomePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel welcomeLabel = new JLabel("관리자 모드로 로그인되었습니다.");
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("함초롬바탕", Font.BOLD, 18));
+        welcomePanel.add(welcomeLabel, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+        JButton allBooksButton = new JButton("전체 도서 확인하기");
+        JButton searchBooksButton = new JButton("도서 관리하기");
+        JButton myRequestsButton = new JButton("대출 신청 확인하기");
+
+        buttonPanel.add(allBooksButton);
+        buttonPanel.add(searchBooksButton);
+        buttonPanel.add(myRequestsButton);
+        welcomePanel.add(buttonPanel, BorderLayout.CENTER);
+
+        allBooksButton.addActionListener(e -> showBookListPanel());
+        searchBooksButton.addActionListener(e -> showBookManagePanel());
+        myRequestsButton.addActionListener(e -> new RequestManager());
+
+        mainPanel.add(welcomePanel);
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     private void showBookListPanel()
@@ -154,6 +192,7 @@ public class AdminMenu extends JFrame
                                 String title = reader.readLine();
                                 String writer = reader.readLine();
                                 String genre = reader.readLine();
+                                String price = reader.readLine();
                                 
                                 if (selected.equals(title))
                                 {
@@ -434,6 +473,59 @@ public class AdminMenu extends JFrame
             mainPanel.add(container);
         }
 
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+    
+    private void showMyRequestedBooks()
+    {
+        mainPanel.removeAll();
+
+        JPanel requestPanel = new JPanel(new BorderLayout(10, 10));
+        JLabel titleLabel = new JLabel("신청된 도서 목록");
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        requestPanel.add(titleLabel, BorderLayout.NORTH);
+
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        File dir = new File("Permissions");
+
+        if (dir.exists() && dir.isDirectory())
+        {
+            File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".per"));
+            if (files != null)
+            {
+                for (File file : files)
+                {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file)))
+                    {
+                        String line = reader.readLine();
+                        if (line != null)
+                        {
+                            String[] parts = line.split(",");
+                            String entry = "제목: " + parts[2] + " | 신청일: " + parts[3] + " | 상태: " + parts[4];
+                            listModel.addElement(entry);
+                        }
+                    }
+                    
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        JList<String> requestList = new JList<>(listModel);
+        JScrollPane scrollPane = new JScrollPane(requestList);
+        requestPanel.add(scrollPane, BorderLayout.CENTER);
+
+        if (listModel.isEmpty())
+        {
+            listModel.addElement("대출 신청된 도서가 없습니다.");
+        }
+
+        mainPanel.add(requestPanel);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
