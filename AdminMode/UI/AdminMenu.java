@@ -1,8 +1,7 @@
 package AdminMode.UI;
 
-import AdminMode.EbookManagement.DeleteBook;
-import AdminMode.EbookManagement.EditBook;
 import AdminMode.EbookManagement.ManageBook;
+import AdminMode.EbookShopping.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.List;
 import AdminMode.UserManagement.AdminUserManage;
+
 public class AdminMenu extends JFrame
 {
 
@@ -69,7 +69,13 @@ public class AdminMenu extends JFrame
         bookMenu.add(manageBookItem);
 
         JMenu loanMenu = new JMenu("대출관리");
-        loanMenu.add(new JMenuItem("신청 확인"));
+        
+        JMenuItem request = new JMenuItem("신청확인");
+        request.addActionListener(e -> {
+            new RequestManager().setVisible(true);
+        });
+        loanMenu.add(request);
+        
         loanMenu.add(new JMenuItem("반납 확인"));
         loanMenu.add(new JMenuItem("대출 내역 조회"));
         loanMenu.add(new JMenuItem("연체자 및 도서 확인"));
@@ -78,7 +84,7 @@ public class AdminMenu extends JFrame
         infoMenu.add(new JMenuItem("앱 사용법"));
         infoMenu.add(new JMenuItem("개발자 정보"));
         infoMenu.add(new JMenuItem("버전 정보"));
-
+        
         JMenu exitMenu = new JMenu("종료");
         JMenuItem exitItem = new JMenuItem("프로그램 종료");
         exitItem.addActionListener(e -> System.exit(0));
@@ -148,7 +154,6 @@ public class AdminMenu extends JFrame
                                 String title = reader.readLine();
                                 String writer = reader.readLine();
                                 String genre = reader.readLine();
-                                String price = reader.readLine();
                                 
                                 if (selected.equals(title))
                                 {
@@ -180,7 +185,33 @@ public class AdminMenu extends JFrame
                     return;
                 }
 
-                new EditBook(selected, this, this::showBookListPanel);
+                File dir = new File("Books");
+                File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".nov"));
+                if (files != null) {
+                    for (File file : files) {
+                        try (BufferedReader reader = new BufferedReader(new FileReader(file)))
+                        {
+                            String title = reader.readLine();
+                            String writer = reader.readLine();
+                            String genre = reader.readLine();
+                            String price = reader.readLine()
+;
+                            if (title != null && title.equals(selected))
+                            {
+                                new BookEditor(this, file, title, writer, price, genre, () ->
+                                {
+                                    showBookListPanel();
+                                }).setVisible(true);
+                                break;
+                            }
+                        }
+                        
+                        catch (IOException ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
             });
 
             //도서 삭제
@@ -192,7 +223,43 @@ public class AdminMenu extends JFrame
                 int confirm = JOptionPane.showConfirmDialog(this, "정말 삭제하시겠습니까?", "도서 삭제", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION)
                 {
-                    new DeleteBook(selected, this);
+                    File dir = new File("Books");
+                    File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".nov"));
+
+                    if (files != null)
+                    {
+                        for (File file : files)
+                        {
+                            try (BufferedReader reader = new BufferedReader(new FileReader(file)))
+                            {
+                                String title = reader.readLine();
+
+                                if (title != null && title.equals(selected))
+                                {
+                                    reader.close();
+                                    boolean deleted = file.delete();
+
+                                    if (deleted)
+                                    {
+                                        JOptionPane.showMessageDialog(this, "도서가 삭제되었습니다.");
+                                        showBookManagePanel();
+                                    }
+                                    else
+                                    {
+                                        JOptionPane.showMessageDialog(this, "삭제 실패: 파일을 삭제할 수 없습니다.\n경로: " + file.getAbsolutePath());
+                                    }
+
+                                    break;
+                                }
+                            }
+                            
+                            catch (IOException ex)
+                            {
+                                ex.printStackTrace();
+                                JOptionPane.showMessageDialog(this, "오류 발생: " + ex.getMessage());
+                            }
+                        }
+                    }
                 }
             });
 
@@ -259,9 +326,11 @@ public class AdminMenu extends JFrame
                                 String title = reader.readLine();
                                 String writer = reader.readLine();
                                 String genre = reader.readLine();
-                                String price = reader.readLine();
+
                                 if (title != null && title.equals(selected)) {
-                                    infoArea.setText("제목 : " + title + "\n" + "작가 : " + writer + "\n" + "장르 : " + genre + "\n" + "가격 : " + price);
+                                    infoArea.setText("제목: " + title + "\n"
+                                                   + "작가: " + writer + "\n"
+                                                   + "장르: " + genre);
                                     break;
                                 }
                             }
@@ -297,7 +366,7 @@ public class AdminMenu extends JFrame
                             String writer = reader.readLine();
                             String genre = reader.readLine();
                             String price = reader.readLine();
-                            
+
                             if (title != null && title.equals(selected))
                             {
                                 new BookEditor(this, file, title, writer, genre, price, this::showBookManagePanel).setVisible(true);
