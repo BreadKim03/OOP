@@ -147,29 +147,29 @@ public class SignIn
     //ID와 비밀번호 확인
     private static User login(String id, String password, String mode)
     {
-        String folder = mode.equals("admin") ? "Admin" : "User";
-        File file = new File(folder + "/" + id + ".dat");
-        boolean isAdmin = mode.equals("admin") ? true : false;
+        boolean isAdmin = mode.equals("admin");
 
-        if (!file.exists()) return null;
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file)))
-        {
-            User user = (User) ois.readObject();
-            if (user.getPassword().equals(password) && isAdmin == false)
-            {
-            	new BookMenu(user);
-                return user;
-            }
-            
-            if(user.getPassword().equals(password) && isAdmin == true)
-            {
-            	new AdminMenu();
-            	return user;
+        //고정 관리자 아이디(admin, 1234)
+        if (isAdmin) {
+            if (id.equals("admin") && password.equals("1234")) {
+                new AdminMenu();
+                return new User("관리자", "admin", "1234"); // 가짜 User 객체 생성
+            } else {
+                return null;
             }
         }
-        catch (IOException | ClassNotFoundException e)
-        {
+
+        // 유저 로그인은 기존 방식 유지
+        File file = new File("User/" + id + ".dat");
+        if (!file.exists()) return null;
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            User user = (User) ois.readObject();
+            if (user.getPassword().equals(password)) {
+                new BookMenu(user);
+                return user;
+            }
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
