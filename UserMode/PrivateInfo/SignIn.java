@@ -150,11 +150,16 @@ public class SignIn
         boolean isAdmin = mode.equals("admin");
 
         //고정 관리자 아이디(admin, 1234)
-        if (isAdmin) {
-            if (id.equals("admin") && password.equals("1234")) {
+        if (isAdmin)
+        {
+            if (id.equals("admin") && password.equals("1234"))
+            {
                 new AdminMenu();
                 return new User("관리자", "admin", "1234"); // 가짜 User 객체 생성
-            } else {
+            }
+            
+            else
+            {
                 return null;
             }
         }
@@ -163,16 +168,22 @@ public class SignIn
         File file = new File("User/" + id + ".dat");
         if (!file.exists()) return null;
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file)))
+        {
             User user = (User) ois.readObject();
-            if (user.getPassword().equals(password)) {
+            if (user.getPassword().equals(password))
+            {
                 new BookMenu(user);
                 return user;
             }
-        } catch (IOException | ClassNotFoundException e) {
+        }
+        
+        catch (IOException | ClassNotFoundException e)
+        {
             e.printStackTrace();
         }
 
         return null;
     }
+
 }

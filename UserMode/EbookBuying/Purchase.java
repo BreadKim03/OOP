@@ -48,4 +48,63 @@ public class Purchase {
 	        JOptionPane.showMessageDialog(null, "대출 신청에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
 	    }
 	}
+	
+	public static void purchasePanel(String userId, String userName, String bookTitle, String correctPassword)
+	{
+	    JFrame frame = new JFrame("전자책 결제");
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    frame.setSize(400, 250);
+	    frame.setLocationRelativeTo(null);
+	    frame.setLayout(new GridLayout(5, 1));
+
+	    JTextField nameField = new JTextField();
+	    JTextField accountField = new JTextField();
+	    JPasswordField passwordField = new JPasswordField();
+
+	    frame.add(new JLabel("이름:"));
+	    frame.add(nameField);
+	    frame.add(new JLabel("계좌번호:"));
+	    frame.add(accountField);
+	    frame.add(new JLabel("비밀번호:"));
+	    frame.add(passwordField);
+
+	    JPanel buttonPanel = new JPanel();
+	    JButton payButton = new JButton("결제하기");
+	    JButton cancelButton = new JButton("취소");
+	    buttonPanel.add(payButton);
+	    buttonPanel.add(cancelButton);
+
+	    frame.add(buttonPanel);
+	    frame.setVisible(true);
+
+	    payButton.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent e)
+	        {
+	            String inputName = nameField.getText();
+	            String inputAccount = accountField.getText();
+	            String inputPassword = new String(passwordField.getPassword());
+
+	            if (!inputPassword.equals(correctPassword))
+	            {
+	                JOptionPane.showMessageDialog(frame, "비밀번호를 확인해 주세요.", "오류", JOptionPane.WARNING_MESSAGE);
+	            }
+	            
+	            else
+	            {
+	                MakeRequest(userId, userName, bookTitle);
+	                JOptionPane.showMessageDialog(frame, "대출 신청이 완료되었습니다.", "성공", JOptionPane.INFORMATION_MESSAGE);
+	                frame.dispose();
+	            }
+	        }
+	    });
+
+	    cancelButton.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent e)
+	        {
+	            frame.dispose();
+	        }
+	    });
+	}
 }
