@@ -38,7 +38,14 @@ public class BookMenu extends JFrame{
                     mainPanel.repaint();
                 }
         );
-
+        deleteItem.addActionListener(e ->
+                {
+                    WithdrawWindow withdrawwindow = new WithdrawWindow(loginUser,this);
+                    mainPanel.removeAll();
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                }
+        );
         logoutItem.addActionListener(e ->
         {
             int choice = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
@@ -48,9 +55,7 @@ public class BookMenu extends JFrame{
                 SwingUtilities.invokeLater(() -> new SignIn());
             }
         });
-
-
-
+        
         memberMenu.add(editItem);
         memberMenu.add(deleteItem);
         memberMenu.addSeparator();
@@ -102,5 +107,4 @@ public class BookMenu extends JFrame{
 
         setVisible(true);
     }
-
 }
