@@ -36,6 +36,24 @@ public class BookMenu extends JFrame
             JMenuItem editItem = new JMenuItem("회원 정보 수정");
             JMenuItem deleteItem = new JMenuItem("회원 탈퇴");
             JMenuItem logoutItem = new JMenuItem("로그아웃");
+	editItem.addActionListener(e ->
+                {
+                    EditInfo EditInfoWindow = new EditInfo(loginUser);
+                    mainPanel.removeAll();
+                    mainPanel.add(EditInfoWindow);
+                    add(mainPanel, BorderLayout.CENTER);
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                }
+        );
+        deleteItem.addActionListener(e ->
+                {
+                    WithdrawWindow withdrawwindow = new WithdrawWindow(loginUser,this);
+                    mainPanel.removeAll();
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                }
+        );
             logoutItem.addActionListener(e -> 
             {
             	int choice = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
