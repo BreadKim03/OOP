@@ -7,7 +7,6 @@ import AdminMode.UI.BookEditor;
 import UserMode.PrivateInfo.SignIn;
 import UserMode.User;
 import UserMode.PrivateInfo.*;
-import UserMode.EbookBuying.Purchase;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,9 +17,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-
 public class BookMenu extends JFrame
 {
+		
 	private User loginUser; // 로그인한 유저 정보, 나중에 지워도 될거같은데 일단 남기고 이쪽이 편하면 이렇게 사용할 예정
 	JPanel mainPanel;
 	
@@ -162,28 +161,7 @@ public class BookMenu extends JFrame
                 JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
                 JButton deleteButton = new JButton("상세정보");
                 deleteButton.addActionListener(e -> showBookInfoPanel());
-                
                 JButton editButton = new JButton("대출 신청");
-                editButton.addActionListener(e -> {
-                    String selected = bookList.getSelectedValue();
-                    if (selected == null) {
-                        JOptionPane.showMessageDialog(this, "대출할 도서를 선택하세요.", "경고", JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                    // 확인창 띄우기
-                    int confirm = JOptionPane.showConfirmDialog(
-                        this,
-                        selected + " 도서를 대출 신청하시겠습니까?",
-                        "대출 신청 확인",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE
-                    );
-                    if (confirm == JOptionPane.YES_OPTION) {
-                        Purchase.MakeRequest(loginUser.getID(), loginUser.getName(), selected);
-                        JOptionPane.showMessageDialog(this, "대출 신청이 완료되었습니다.");
-                    }
-                });
-                
                 buttonPanel.add(editButton);
                 buttonPanel.add(deleteButton);
                 container.add(buttonPanel, BorderLayout.NORTH);
@@ -436,6 +414,18 @@ public class BookMenu extends JFrame
 
             DefaultListModel<String> resultModel = new DefaultListModel<>();
             JList<String> resultList = new JList<>(resultModel);
+            resultList.addListSelectionListener(e -> 
+            {
+            	if (!e.getValueIsAdjusting())
+            	{
+                    String selected = resultList.getSelectedValue();
+                    if (selected != null && !selected.equals("검색 결과가 없습니다."))
+                    {
+                        showBookSearchResult(selected);
+                    }
+            	}
+            }
+            );
             JScrollPane scrollPane = new JScrollPane(resultList);
 
             searchPanel.add(inputPanel, BorderLayout.NORTH);
@@ -498,4 +488,87 @@ public class BookMenu extends JFrame
             mainPanel.repaint();
         }
         
+        private void showBookSearchResult(String selectedTitle)
+        {
+            mainPanel.removeAll();
+
+            JPanel container = new JPanel(new BorderLayout());
+
+            JTextField titleField = new JTextField(selectedTitle);
+            titleField.setEditable(false);
+            container.add(titleField, BorderLayout.WEST);
+
+            JTextArea previewArea = new JTextArea();
+            previewArea.setEditable(false);
+            JScrollPane centerScroll = new JScrollPane(previewArea);
+            container.add(centerScroll, BorderLayout.CENTER);
+
+            JPanel rightPanel = new JPanel(new BorderLayout());
+            JTextArea infoArea = new JTextArea();
+            infoArea.setEditable(false);
+            JScrollPane infoScroll = new JScrollPane(infoArea);
+
+            JButton backButton = new JButton("목록으로 돌아가기");
+            backButton.addActionListener(e -> showBookListPanel());
+
+            JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            topPanel.add(backButton);
+
+            rightPanel.add(topPanel, BorderLayout.NORTH);
+            rightPanel.add(infoScroll, BorderLayout.CENTER);
+
+            container.add(rightPanel, BorderLayout.EAST);
+
+            File dir = new File("Books");
+            File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".nov"));
+
+            if (files != null)
+            {
+                for (File file : files)
+                {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file)))
+                    {
+                        String title = reader.readLine();
+                        String writer = reader.readLine();
+                        String genre = reader.readLine();
+                        String price = reader.readLine();
+
+                        if (title != null && title.equals(selectedTitle))
+                        {
+                            // 내용 일부 읽기
+                            StringBuilder preview = new StringBuilder();
+                            String line;
+                            int lineCount = 0;
+                            while ((line = reader.readLine()) != null && lineCount < 7)
+                            {
+                                preview.append(line).append("\n");
+                                lineCount++;
+                            }
+                            
+                            if (reader.readLine() != null)
+                            {
+                                preview.append("\n...");
+                            }
+                            previewArea.setText(preview.toString());
+
+                            // 상세 정보 표시
+                            infoArea.setText("제목 : " + title + "\n"
+                                    + "작가 : " + writer + "\n"
+                                    + "장르 : " + genre + "\n"
+                                    + "가격 : " + price);
+                            break;
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+
+            mainPanel.add(container);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        }
+        
 }
+
+
