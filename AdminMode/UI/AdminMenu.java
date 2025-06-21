@@ -39,15 +39,15 @@ public class AdminMenu extends JFrame
             int choice = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
             if (choice == JOptionPane.YES_OPTION)
             {
-            	dispose();
-        		SwingUtilities.invokeLater(() -> new SignIn());
+                dispose();
+                SwingUtilities.invokeLater(() -> new SignIn());
             }
         });
-        
+
         userManageItem.addActionListener(e -> {
             new AdminUserManage();
         });
-        
+
         myPageMenu.add(userManageItem);
         myPageMenu.add(requestItem);
         myPageMenu.addSeparator();
@@ -56,41 +56,35 @@ public class AdminMenu extends JFrame
         //EBook 메뉴
         JMenu bookMenu = new JMenu("E-Book");
         JMenuItem allBooksItem = new JMenuItem("전체 도서 목록");
-        
+
         allBooksItem.addActionListener((ActionEvent e) ->
         {
             showBookListPanel();
         });
-        
+
         JMenuItem manageBookItem = new JMenuItem("도서 관리");
         manageBookItem.addActionListener(e ->
         {
             showBookManagePanel();
         });
-        
+
         bookMenu.add(manageBookItem);
         bookMenu.add(allBooksItem);
         bookMenu.add(manageBookItem);
 
         JMenu loanMenu = new JMenu("대출관리");
-        
+
         JMenuItem request = new JMenuItem("신청확인");
         request.addActionListener(e ->
         {
             new RequestManager().setVisible(true);
         });
         loanMenu.add(request);
-        
-        loanMenu.add(new JMenuItem("반납 확인"));
+
         JMenuItem requestResult = new JMenuItem("대출 내역 조회");
         loanMenu.add(requestResult);
         requestResult.addActionListener(e -> showMyRequestedBooks());
 
-        JMenu infoMenu = new JMenu("정보");
-        infoMenu.add(new JMenuItem("앱 사용법"));
-        infoMenu.add(new JMenuItem("개발자 정보"));
-        infoMenu.add(new JMenuItem("버전 정보"));
-        
         JMenu exitMenu = new JMenu("종료");
         JMenuItem exitItem = new JMenuItem("프로그램 종료");
         exitItem.addActionListener(e -> System.exit(0));
@@ -99,7 +93,6 @@ public class AdminMenu extends JFrame
         menuBar.add(myPageMenu);
         menuBar.add(bookMenu);
         menuBar.add(loanMenu);
-        menuBar.add(infoMenu);
         menuBar.add(exitMenu);
 
         setJMenuBar(menuBar);
@@ -107,7 +100,7 @@ public class AdminMenu extends JFrame
         showWelcomePanel();
         setVisible(true);
     }
-    
+
     private void showWelcomePanel()
     {
         mainPanel.removeAll();
@@ -141,7 +134,7 @@ public class AdminMenu extends JFrame
 
     private void showBookListPanel()
     {
-    	mainPanel.removeAll();
+        mainPanel.removeAll();
 
         ManageBook manager = new ManageBook();
         List<String> titles = manager.getBookTitles("Books");
@@ -193,7 +186,7 @@ public class AdminMenu extends JFrame
                                 String writer = reader.readLine();
                                 String genre = reader.readLine();
                                 String price = reader.readLine();
-                                
+
                                 if (selected.equals(title))
                                 {
                                     String line;
@@ -234,7 +227,7 @@ public class AdminMenu extends JFrame
                             String writer = reader.readLine();
                             String genre = reader.readLine();
                             String price = reader.readLine()
-;
+                                    ;
                             if (title != null && title.equals(selected))
                             {
                                 new BookEditor(this, file, title, writer, price, genre, () ->
@@ -244,7 +237,7 @@ public class AdminMenu extends JFrame
                                 break;
                             }
                         }
-                        
+
                         catch (IOException ex)
                         {
                             ex.printStackTrace();
@@ -291,7 +284,7 @@ public class AdminMenu extends JFrame
                                     break;
                                 }
                             }
-                            
+
                             catch (IOException ex)
                             {
                                 ex.printStackTrace();
@@ -308,7 +301,7 @@ public class AdminMenu extends JFrame
         mainPanel.revalidate();
         mainPanel.repaint();
     }
-    
+
     //도서 관리 탭
     private void showBookManagePanel()
     {
@@ -323,7 +316,7 @@ public class AdminMenu extends JFrame
             noBooksLabel.setHorizontalAlignment(SwingConstants.CENTER);
             mainPanel.add(noBooksLabel);
         }
-        
+
         else
         {
             JPanel container = new JPanel(new BorderLayout());
@@ -368,12 +361,12 @@ public class AdminMenu extends JFrame
 
                                 if (title != null && title.equals(selected)) {
                                     infoArea.setText("제목: " + title + "\n"
-                                                   + "작가: " + writer + "\n"
-                                                   + "장르: " + genre);
+                                            + "작가: " + writer + "\n"
+                                            + "장르: " + genre);
                                     break;
                                 }
                             }
-                            
+
                             catch (IOException ex)
                             {
                                 ex.printStackTrace();
@@ -412,7 +405,7 @@ public class AdminMenu extends JFrame
                                 break;
                             }
                         }
-                        
+
                         catch (IOException ex)
                         {
                             ex.printStackTrace();
@@ -459,7 +452,7 @@ public class AdminMenu extends JFrame
                                     break;
                                 }
                             }
-                            
+
                             catch (IOException ex)
                             {
                                 ex.printStackTrace();
@@ -476,7 +469,7 @@ public class AdminMenu extends JFrame
         mainPanel.revalidate();
         mainPanel.repaint();
     }
-    
+
     private void showMyRequestedBooks()
     {
         mainPanel.removeAll();
@@ -507,7 +500,7 @@ public class AdminMenu extends JFrame
                             listModel.addElement(entry);
                         }
                     }
-                    
+
                     catch (IOException e)
                     {
                         e.printStackTrace();
