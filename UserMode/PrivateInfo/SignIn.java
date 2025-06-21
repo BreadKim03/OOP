@@ -158,7 +158,7 @@ public class SignIn
             User user = (User) ois.readObject();
             if (user.getPassword().equals(password) && isAdmin == false)
             {
-            	new BookMenu();
+            	new BookMenu(user);
                 return user;
             }
             
