@@ -9,6 +9,7 @@ public class BookEditor extends JDialog
     private JTextField titleField;
     private JTextField writerField;
     private JTextField genreField;
+    private JTextField priceField;
 
     private JButton saveButton;
     private JButton cancelButton;
@@ -16,27 +17,32 @@ public class BookEditor extends JDialog
     private File bookFile;
     private Runnable Save;
 
-    public BookEditor(JFrame parent, File bookFile, String title, String writer, String genre, Runnable onSaveCallback)
+    public BookEditor(JFrame parent, File bookFile, String title, String writer, String genre, String price, Runnable onSaveCallback)
     {
         super(parent, "도서 정보 수정", true);
         this.bookFile = bookFile;
         this.Save = onSaveCallback;
 
-        setLayout(new GridLayout(4, 2, 10, 10));
+        setLayout(new GridLayout(5, 2, 10, 10));
         setSize(400, 200);
         setLocationRelativeTo(parent);
 
-        add(new JLabel("제목:"));
+        add(new JLabel("제목 :"));
         titleField = new JTextField(title);
         add(titleField);
 
-        add(new JLabel("작가:"));
+        add(new JLabel("작가 :"));
         writerField = new JTextField(writer);
         add(writerField);
 
-        add(new JLabel("장르:"));
+        add(new JLabel("장르 :"));
         genreField = new JTextField(genre);
         add(genreField);
+        
+        add(new JLabel("가격 : "));
+        priceField = new JTextField(price);
+        add(priceField);
+        
 
         saveButton = new JButton("저장");
         cancelButton = new JButton("취소");
