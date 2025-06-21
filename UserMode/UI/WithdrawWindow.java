@@ -6,35 +6,35 @@ import UserMode.User;
 import UserMode.PrivateInfo.*;
 
 public class WithdrawWindow extends JFrame {
-private User user;
-private JFrame BookMenu;
-
-public WithdrawWindow(User loginUser, JFrame BookMenu) {
-this.BookMenu = BookMenu;
-this.user = loginUser;
-setTitle("회원탈퇴");
-setSize(350,200);
-setLocationRelativeTo(null);
-
-JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
-panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-JLabel idLabel = new JLabel("ID:");
-JTextField idField = new JTextField(user.getID());
-idField.setEditable(false);
-
-JLabel pwLabel = new JLabel("비밀번호:");
-JPasswordField pwField = new JPasswordField();
-
-panel.add(idLabel);
-panel.add(idField);
-panel.add(pwLabel);
-panel.add(pwField);
-
-JButton withdrawButton = new JButton("탈퇴하기");
-JButton cancelButton = new JButton("취소");
-
-withdrawButton.addActionListener(e -> {
+	private User user;
+	private JFrame BookMenu;
+	
+	public WithdrawWindow(User loginUser, JFrame BookMenu) {
+		this.BookMenu = BookMenu;
+		this.user = loginUser;
+		setTitle("회원탈퇴");
+		setSize(350,200);
+		setLocationRelativeTo(null);
+		
+		JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		
+		JLabel idLabel = new JLabel("ID:");
+		JTextField idField = new JTextField(user.getID());
+		idField.setEditable(false);
+		
+		JLabel pwLabel = new JLabel("비밀번호:");
+		JPasswordField pwField = new JPasswordField();
+		
+		panel.add(idLabel);
+		panel.add(idField);
+		panel.add(pwLabel);
+		panel.add(pwField);
+		
+		JButton withdrawButton = new JButton("탈퇴하기");
+		JButton cancelButton = new JButton("취소");
+		
+		withdrawButton.addActionListener(e -> {
             String inputPw = new String(pwField.getPassword());
             if (inputPw.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "비밀번호를 입력하세요.", "오류", JOptionPane.WARNING_MESSAGE);
@@ -72,5 +72,5 @@ withdrawButton.addActionListener(e -> {
         add(buttonPanel, BorderLayout.SOUTH);
 
         setVisible(true);
-}
+	}
 }

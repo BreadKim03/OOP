@@ -47,4 +47,17 @@ public class ManageBook
 
         return titles;
     }
+
+    //테스트
+    public static void main(String[] args)
+    {
+        ManageBook manager = new ManageBook();
+        List<String> titles = manager.getBookTitles("Books");
+        
+        System.out.println("책 제목 목록:");
+        for (String title : titles)
+        {
+            System.out.println("- " + title);
+        }
+    }
 }

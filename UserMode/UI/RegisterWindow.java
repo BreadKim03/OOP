@@ -82,6 +82,7 @@ public class RegisterWindow extends JFrame
 
         add(panel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
+        setVisible(true);
     }
 
     private boolean isDuplicateID(String id)
@@ -106,4 +107,5 @@ public class RegisterWindow extends JFrame
             e.printStackTrace();
         }
     }
+    
 }
