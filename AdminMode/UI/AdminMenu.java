@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.List;
-
+import AdminMode.UserManagement.AdminUserManage;
 public class AdminMenu extends JFrame
 {
 
@@ -37,6 +37,11 @@ public class AdminMenu extends JFrame
                 JOptionPane.showMessageDialog(null, "로그아웃되었습니다.");
             }
         });
+        
+        userManageItem.addActionListener(e -> {
+            new AdminUserManage();
+        });
+        
         myPageMenu.add(userManageItem);
         myPageMenu.add(requestItem);
         myPageMenu.addSeparator();
