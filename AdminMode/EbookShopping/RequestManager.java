@@ -22,23 +22,21 @@ public class RequestManager extends JFrame {
         tableModel = new DefaultTableModel(columnNames, 0);
         requestTable = new JTable(tableModel);
 
+        
         pendingFiles = new ArrayList<>();
         File dir = new File("Permissions");
         if (!dir.exists()) dir.mkdir();
         File[] files = dir.listFiles((d, name) -> name.endsWith(".per"));
         if (files != null) {
             for (File file : files) {
-                try (BufferedReader br = new BufferedReader(
-                        new java.io.InputStreamReader(new java.io.FileInputStream(file), "UTF-8"))) {
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        line = line.trim();
-                        if (line.isEmpty()) continue;
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    br.readLine(); // 헤더 건너뛰기
+                    String line = br.readLine();
+                    if (line != null) {
                         String[] fields = line.split(",");
-                        if (fields.length >= 5 && fields[4].trim().equals("대기중")) {
+                        if (fields.length >= 5 && fields[4].equals("대기중")) {
                             pendingFiles.add(file.toPath());
                             tableModel.addRow(fields);
-                            break; // 한 파일에 한 줄만 있다고 가정
                         }
                     }
                 } catch (IOException e) {
@@ -69,12 +67,16 @@ public class RequestManager extends JFrame {
         if (row >= 0) {
             Path file = pendingFiles.get(row);
             try {
+                // 파일 읽기
                 List<String> lines = Files.readAllLines(file);
-                if (!lines.isEmpty()) {
-                    String[] fields = lines.get(0).split(",");
+                if (lines.size() >= 2) {
+                    // 상태 변경
+                    String[] fields = lines.get(1).split(",");
                     fields[4] = newStatus;
-                    Files.write(file, Collections.singletonList(String.join(",", fields)),
-                        StandardOpenOption.TRUNCATE_EXISTING);
+                    lines.set(1, String.join(",", fields));
+                    // 파일에 다시 저장
+                    Files.write(file, lines, StandardOpenOption.TRUNCATE_EXISTING);
+                    // 테이블에서 제거
                     pendingFiles.remove(row);
                     tableModel.removeRow(row);
                     JOptionPane.showMessageDialog(this,
@@ -92,4 +94,3 @@ public class RequestManager extends JFrame {
         SwingUtilities.invokeLater(() -> new RequestManager());
     }
 }
-
