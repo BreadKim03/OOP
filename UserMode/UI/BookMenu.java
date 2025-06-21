@@ -6,8 +6,8 @@ import AdminMode.EbookManagement.ManageBook;
 import AdminMode.UI.BookEditor;
 import UserMode.PrivateInfo.SignIn;
 import UserMode.User;
+import UserMode.OwnBooks.Purchase;
 import UserMode.PrivateInfo.*;
-import UserMode.EbookBuying.Purchase;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,6 +16,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -424,7 +426,7 @@ public class BookMenu extends JFrame
 
                 mainPanel.add(container);
             }
-
+            
             mainPanel.revalidate();
             mainPanel.repaint();
         }
@@ -432,19 +434,19 @@ public class BookMenu extends JFrame
         private void showSearchResultPanel()
         {
             mainPanel.removeAll();
-
+            
             JPanel searchPanel = new JPanel(new BorderLayout());
-
+            
             JLabel label = new JLabel("검색할 도서의 제목 또는 내용을 입력하세요.");
             JTextField searchField = new JTextField();
             JButton searchButton = new JButton("검색");
-
+            
             JPanel inputPanel = new JPanel(new BorderLayout(5, 5));
             inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             inputPanel.add(label, BorderLayout.NORTH);
             inputPanel.add(searchField, BorderLayout.CENTER);
             inputPanel.add(searchButton, BorderLayout.EAST);
-
+            
             DefaultListModel<String> resultModel = new DefaultListModel<>();
             JList<String> resultList = new JList<>(resultModel);
             resultList.addListSelectionListener(e -> 
@@ -460,10 +462,10 @@ public class BookMenu extends JFrame
             }
             );
             JScrollPane scrollPane = new JScrollPane(resultList);
-
+            
             searchPanel.add(inputPanel, BorderLayout.NORTH);
             searchPanel.add(scrollPane, BorderLayout.CENTER);
-
+            
             searchButton.addActionListener(e ->
             {
                 resultModel.clear();
@@ -474,7 +476,7 @@ public class BookMenu extends JFrame
                     JOptionPane.showMessageDialog(this, "검색어를 입력하세요.");
                     return;
                 }
-
+                
                 File dir = new File("Books");
                 File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".nov"));
 
@@ -509,13 +511,13 @@ public class BookMenu extends JFrame
                         }
                     }
                 }
-
+                
                 if (resultModel.isEmpty())
                 {
                     resultModel.addElement("검색 결과가 없습니다.");
                 }
             });
-
+            
             mainPanel.add(searchPanel);
             mainPanel.revalidate();
             mainPanel.repaint();
@@ -525,37 +527,37 @@ public class BookMenu extends JFrame
         private void showBookSearchResult(String selectedTitle)
         {
             mainPanel.removeAll();
-
+            
             JPanel container = new JPanel(new BorderLayout());
-
+            
             JTextField titleField = new JTextField(selectedTitle);
             titleField.setEditable(false);
             container.add(titleField, BorderLayout.WEST);
-
+            
             JTextArea previewArea = new JTextArea();
             previewArea.setEditable(false);
             JScrollPane centerScroll = new JScrollPane(previewArea);
             container.add(centerScroll, BorderLayout.CENTER);
-
+            
             JPanel rightPanel = new JPanel(new BorderLayout());
             JTextArea infoArea = new JTextArea();
             infoArea.setEditable(false);
             JScrollPane infoScroll = new JScrollPane(infoArea);
-
+            
             JButton backButton = new JButton("목록으로 돌아가기");
             backButton.addActionListener(e -> showBookListPanel());
-
+            
             JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             topPanel.add(backButton);
 
             rightPanel.add(topPanel, BorderLayout.NORTH);
             rightPanel.add(infoScroll, BorderLayout.CENTER);
-
+            
             container.add(rightPanel, BorderLayout.EAST);
-
+            
             File dir = new File("Books");
             File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".nov"));
-
+            
             if (files != null)
             {
                 for (File file : files)
@@ -619,7 +621,7 @@ public class BookMenu extends JFrame
 
             JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 10));
             JButton allBooksButton = new JButton("전체 도서 확인하기");
-            JButton searchBooksButton = new JButton("도서 검색하기");
+            JButton searchBooksButton = new JButton("내 도서");
             JButton myRequestsButton = new JButton("대출 신청한 도서 확인하기");
 
             buttonPanel.add(allBooksButton);
@@ -628,7 +630,7 @@ public class BookMenu extends JFrame
             welcomePanel.add(buttonPanel, BorderLayout.CENTER);
 
             allBooksButton.addActionListener(e -> showBookListPanel());
-            searchBooksButton.addActionListener(e -> showSearchResultPanel());
+            searchBooksButton.addActionListener(e -> showUserBooksPanel());
             myRequestsButton.addActionListener(e -> showMyRequestedBooks());
 
             mainPanel.add(welcomePanel);
@@ -691,4 +693,116 @@ public class BookMenu extends JFrame
             mainPanel.revalidate();
             mainPanel.repaint();
         }
+        
+        private void showUserBooksPanel() {
+            mainPanel.removeAll();
+
+            File dir = new File("UserBooks");
+            File[] files = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".nov"));
+
+            List<File> fileList = new ArrayList<>();
+            DefaultListModel<String> bookListModel = new DefaultListModel<>();
+
+            if (files != null) {
+                for (File file : files) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file)))
+                    {
+                        String title = reader.readLine();
+                        if (title != null && !title.trim().isEmpty())
+                        {
+                            bookListModel.addElement(title.trim());
+                            fileList.add(file);
+                        }
+                    }
+                    
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            if (bookListModel.isEmpty())
+            {
+                JLabel noBooksLabel = new JLabel("보유한 도서가 없습니다.");
+                noBooksLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                mainPanel.add(noBooksLabel);
+            } 
+            
+            else
+            {
+                JPanel container = new JPanel(new BorderLayout());
+                JLabel welcomeLabel = new JLabel(loginUser.getName() + "님의 소유 도서");
+                welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                welcomeLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+                container.add(welcomeLabel, BorderLayout.NORTH);
+                JPanel centerPanel = new JPanel(new GridBagLayout());
+                JList<String> bookList = new JList<>(bookListModel);
+                bookList.setVisibleRowCount(10);
+                bookList.setFixedCellWidth(200);
+                JScrollPane listScrollPane = new JScrollPane(bookList);
+
+                centerPanel.add(listScrollPane);
+                container.add(centerPanel, BorderLayout.CENTER);
+
+                mainPanel.add(container);
+
+                bookList.addListSelectionListener(e ->
+                {
+                    if (!e.getValueIsAdjusting())
+                    {
+                        int selectedIndex = bookList.getSelectedIndex();
+                        if (selectedIndex >= 0 && selectedIndex < fileList.size())
+                        {
+                            File selectedFile = fileList.get(selectedIndex);
+                            showBookContentPanel(selectedFile);
+                        }
+                    }
+                });
+            }
+
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        }
+
+        
+        private void showBookContentPanel(File file)
+        {
+            mainPanel.removeAll();
+            JPanel container = new JPanel(new BorderLayout());
+            
+            JTextArea contentArea = new JTextArea();
+            contentArea.setEditable(false);
+            JScrollPane scrollPane = new JScrollPane(contentArea);
+            container.add(scrollPane, BorderLayout.CENTER);
+
+            JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton backButton = new JButton("돌아가기");
+            topPanel.add(backButton);
+            container.add(topPanel, BorderLayout.NORTH);
+
+            StringBuilder content = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new FileReader(file)))
+            {
+                String line;
+                while ((line = reader.readLine()) != null)
+                {
+                    content.append(line).append("\n");
+                }
+            }
+            
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            contentArea.setText(content.toString());
+
+            backButton.addActionListener(e -> showUserBooksPanel());
+
+            mainPanel.add(container);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        }
+
 }

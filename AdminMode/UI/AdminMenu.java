@@ -1,7 +1,7 @@
 package AdminMode.UI;
 
 import AdminMode.EbookManagement.ManageBook;
-import AdminMode.EbookShopping.*;
+import AdminMode.EbookManagement.RequestManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -528,10 +528,5 @@ public class AdminMenu extends JFrame
         mainPanel.add(requestPanel);
         mainPanel.revalidate();
         mainPanel.repaint();
-    }
-
-    public static void main(String[] args)
-    {
-        SwingUtilities.invokeLater(() -> new AdminMenu());
     }
 }
